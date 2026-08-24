@@ -1,7 +1,10 @@
 #Dependencies 
 import numpy as np
+import random
+import math
 
 #(1)
+print("Question 1:")
 def MatrixMult(A,B):
     if len(A) != len(B):
         print("lengths of A and B don't match")
@@ -25,3 +28,78 @@ B = np.array([[9,8,7],[6,5,4],[3,2,1]])
 
 #Testing matrix mult. function
 print(MatrixMult(A,B))
+
+
+#(2)
+print("Question 2:")
+#Generate all possibilities 
+pDic = {}
+counter = 0
+for a in range(2):
+    for b in range(2):
+        for c in range(2):
+            for d in range(2):
+                pDic.update({counter:np.array([(-1)**a,(-1)**b,(-1)**c,(-1)**d])})
+                counter += 1
+#Finding the expected E
+ESum = 0
+for x in pDic.values():
+    E = x[0]*x[1]+x[1]*x[2]+x[2]*x[3]+x[3]*x[0]
+    ESum += E*np.e**(-E)
+print(ESum)
+
+
+#Question 3
+print("Question 3")
+#Generate the points, do later
+Points = {}
+for i in range(7):
+    Points.update({i:[random.random(),random.random()]})
+print("Points:",Points)
+
+#Path permutation generation algorithm
+#Source: https://www.geeksforgeeks.org/dsa/print-all-possible-permutations-of-an-array-vector-without-duplicates-using-backtracking/
+# Recursive function to find all possible permutations
+def permutations(res, arr, idx):
+    if idx == len(arr):
+        res.append(arr[:])
+        return
+
+    # Permutations made by swapping each element starting from index `idx`
+    for i in range(idx, len(arr)):
+        # Swapping
+        arr[idx], arr[i] = arr[i], arr[idx]
+
+        # Recursive call
+        permutations(res, arr, idx + 1)
+
+        # Backtracking
+        arr[idx], arr[i] = arr[i], arr[idx]
+
+# Function to get the permutations
+def permuteDist(arr):
+    res = []
+    permutations(res, arr, 0)
+    return res
+
+arr = [0,1,2,3,4,5,6]
+res = permuteDist(arr)
+
+#Minimize the path legnth
+MinPath = []
+MinPathLength = 99999
+for x in res:
+    PathLength = 0
+    for i in range(len(x)):
+        if i == 0:
+            continue
+        SecondKey = x[i]
+        FirstKey = x[i-1]
+        SecondPoint = Points[SecondKey]
+        FirstPoint = Points[FirstKey]
+        PathLength += math.dist(SecondPoint,FirstPoint)
+    if PathLength < MinPathLength:
+        MinPathLength = PathLength
+        print("MinPathLength: ",MinPathLength)
+    
+        
