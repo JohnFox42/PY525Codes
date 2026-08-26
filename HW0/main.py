@@ -2,6 +2,7 @@
 import numpy as np
 import random
 import math
+import matplotlib.pyplot as plt 
 
 #(1)
 print("Question 1:")
@@ -88,8 +89,13 @@ res = permuteDist(arr)
 #Minimize the path legnth
 MinPath = []
 MinPathLength = 99999
+ShortestPath = []
+SecondShortestPath = []
 for x in res:
     PathLength = 0
+    #Prevents the same path from being considered as a flipped array will have the same path as its original
+    if x[::-1] == ShortestPath:
+        continue
     for i in range(len(x)):
         if i == 0:
             continue
@@ -100,6 +106,42 @@ for x in res:
         PathLength += math.dist(SecondPoint,FirstPoint)
     if PathLength < MinPathLength:
         MinPathLength = PathLength
-        print("MinPathLength: ",MinPathLength)
-    
-        
+        SecondShortestPath=ShortestPath
+        ShortestPath=x
+print("Shortest Path: ",ShortestPath)
+print("Second Shortest Path: ",SecondShortestPath)
+
+#Graphing the points
+plt.figure(1)
+for i in Points.values():
+    plt.scatter(i[0],i[1],color="b")
+#Graphing the shortest path
+for i in range(len(ShortestPath)):
+    if i == 0:
+        continue
+    StartKey = ShortestPath[i-1]
+    EndKey = ShortestPath[i]
+    StartPoint = Points[StartKey]
+    EndPoint = Points[EndKey]
+    x = np.linspace(StartPoint[0],EndPoint[0],100)
+    y = np.linspace(StartPoint[1],EndPoint[1],100)
+    plt.plot(x,y,color="b")
+plt.draw()
+
+#Graphing the points
+plt.figure(2)
+for i in Points.values():
+    plt.scatter(i[0],i[1],color="g")
+#Graphing the second shortest path
+for i in range(len(ShortestPath)):
+    if i == 0:
+        continue
+    StartKey = SecondShortestPath[i-1]
+    EndKey = SecondShortestPath[i]
+    StartPoint = Points[StartKey]
+    EndPoint = Points[EndKey]
+    x = np.linspace(StartPoint[0],EndPoint[0],100)
+    y = np.linspace(StartPoint[1],EndPoint[1],100)
+    plt.plot(x,y,color="g")
+plt.draw()
+plt.show()
