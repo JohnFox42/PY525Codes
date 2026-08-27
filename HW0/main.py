@@ -51,6 +51,7 @@ print(ESum)
 
 
 #Question 3
+#For writeup, make sure to cite permutator and talk about same path prevention
 print("Question 3")
 #Generate the points, do later
 Points = {}
@@ -145,3 +146,52 @@ for i in range(len(ShortestPath)):
     plt.plot(x,y,color="g")
 plt.draw()
 plt.show()
+
+
+#Question 4
+#For writeup, talk about treatment of 0
+#Defining the trapezoidal integrator
+def TrapIntegrator(f,a,b,N):
+    h = (b-a)/N
+    x = np.linspace(a,b,N+1)
+    Sum = 0
+    for i in range(N):
+        Sum += (h/2)*(f(x[i])+f(x[i+1]))
+    return Sum 
+
+#Defining the Integrand
+def g(p):
+    return np.sin(p)/np.sqrt(p)
+
+#Defining the Integrator function
+def I(t):
+    return TrapIntegrator(g,0.000001,t,9999)
+
+#Plotting 
+x = np.linspace(0.000001,100,301)
+plt.plot(x,I(x))
+plt.show()
+
+
+
+#Question 5
+#Initializing the zero matrix 
+N = 10
+s = np.zeros([N+1,N+1])
+for i in range(N+1):
+    for j in range(N+1):
+        prob = random.random()
+        if prob > 0.33:
+            continue
+        elif prob <= 0.33:
+            s[i,j] = 1
+
+#Printing the empty and filled dots
+for i in range(N+1):
+    for j in range(N+1):
+        if s[i,j] == 1:
+            plt.scatter(i,j,color="b")
+        elif s[i,j] == 0:
+            plt.scatter(i,j,facecolors="none",edgecolors="b")
+plt.show()
+
