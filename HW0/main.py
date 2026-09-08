@@ -161,15 +161,21 @@ def TrapIntegrator(f,a,b,N):
 
 #Defining the Integrand
 def g(p):
-    return np.sin(p)/np.sqrt(p)
+    if p == 0:
+        return 0
+    elif p > 0:
+        return np.sin(p)/np.sqrt(p)
 
 #Defining the Integrator function
 def I(t):
-    return TrapIntegrator(g,0.000001,t,9999)
+    return TrapIntegrator(g,0,t,9999)
 
 #Plotting 
-x = np.linspace(0.000001,100,301)
-plt.plot(x,I(x))
+x = np.linspace(0,100,301)
+y = np.zeros(len(x))
+for i in range(len(x)):
+    y[i] = I(x[i])
+plt.plot(x,y)
 plt.show()
 
 
