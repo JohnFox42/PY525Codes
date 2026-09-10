@@ -5,6 +5,7 @@ import scipy as sci
 import random 
 
 def main() ->None:
+    '''
     #Question 1 
     print("Question 1")
     def GenerateZ():
@@ -55,7 +56,7 @@ def main() ->None:
     print("Variance:",variance)
     D0 = variance/(2*Time)
     print("D0:",D0)
-
+    '''
 
 
     #Question 3
@@ -83,11 +84,32 @@ def main() ->None:
         else:
             print("Failure to step")
             return 0
-    point = np.zeros(3)
-    path = {0:point.copy()}
-    for i in range(10):
-        point = RandomStepQ3(point,0.1)
-        path.update({i+1:point.copy()})
-    for i in path.values():
-        print(f"{i[0]:.1f}",f"{i[1]:.1f}",f"{i[2]:.1f}")
+    def PathGen(StepLength):
+        FullLength = 1
+        NumStep = FullLength/StepLength
+        point = np.zeros(3)
+        path = {0:point.copy()}
+        for i in range(round(NumStep)):
+            point = RandomStepQ3(point,StepLength)
+            path.update({i+1:point.copy()})
+        y = np.log(NumStep)
+        x = np.log(1/StepLength)
+        return (x,y)
+    Lengths = np.logspace(-7,-1,7)
+    print("Lengths:",Lengths)
+    x = []
+    y = []
+    for i in Lengths:
+        OutData = PathGen(i)
+        xOut, yOut = OutData
+        x.append(xOut)
+        y.append(yOut)
+    regression = sci.stats.linregress(x,y)
+    slope, intercept, r, p, stdev = regression
+    print("Hausdorff Dimension:",slope)
+    plt.plot(x,y)
+    plt.show()
+
+    
+    
     
