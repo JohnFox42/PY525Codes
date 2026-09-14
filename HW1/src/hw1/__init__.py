@@ -5,7 +5,6 @@ import scipy as sci
 import random 
 
 def main() ->None:
-    '''
     #Question 1 
     print("Question 1")
     def GenerateZ():
@@ -19,10 +18,9 @@ def main() ->None:
     for i in range(10**6):
         data.append(GenerateZ())
     x = np.linspace(0,12,100)
-    plt.hist(data,bins=100)
-    plt.plot(x,Gauss(x,35300,6,1))
+    plt.hist(data,bins=101,density=True)
+    plt.plot(x,Gauss(x,1/np.sqrt(2*np.pi),6,1))
     plt.show()
-
 
     #Question 2
     print("Question 2")
@@ -43,8 +41,8 @@ def main() ->None:
         else:
             print("Failure to step")
             return 0
-    NumWalkers = 1000
-    Time = 10000
+    NumWalkers = 10000
+    Time = 1000
     walkers = np.zeros([NumWalkers,2])
     for i in range(len(walkers[:,0])):
         for k in range(Time):
@@ -53,12 +51,10 @@ def main() ->None:
     for i in range(len(walkers[:,0])):
         SumSquares += walkers[i,0]**2+walkers[i,1]**2
     variance = SumSquares/NumWalkers
-    print("Variance:",variance)
     D0 = variance/(2*Time)
     print("D0:",D0)
-    '''
 
-
+    
     #Question 3
     print("Question 3")
     def RandomStepQ3(pt,deltat):
@@ -84,32 +80,29 @@ def main() ->None:
         else:
             print("Failure to step")
             return 0
-    def PathGen(StepLength):
-        FullLength = 1
-        NumStep = FullLength/StepLength
+    NumStep = 1000
+    BallCountAverage = np.zeros(101)
+    BallRadii = np.linspace(1,200,101)
+    for i in range(1000):
         point = np.zeros(3)
+        BallCounts = np.zeros(len(BallRadii))
         path = {0:point.copy()}
-        for i in range(round(NumStep)):
-            point = RandomStepQ3(point,StepLength)
+        for i in range(NumStep):
+            point = RandomStepQ3(point,1)
             path.update({i+1:point.copy()})
-        y = np.log(NumStep)
-        x = np.log(1/StepLength)
-        return (x,y)
-    Lengths = np.logspace(-7,-1,7)
-    print("Lengths:",Lengths)
+            for i in range(len(BallRadii)):
+                if np.sqrt(point[0]**2+point[1]**2+point[2]**2) < BallRadii[i]:
+                    BallCounts[i] += 1
+        BallCountAverage += np.array(BallCounts)*0.001
+    plt.plot(np.log(BallRadii),np.log(BallCountAverage))
+    plt.show()
     x = []
     y = []
-    for i in Lengths:
-        OutData = PathGen(i)
-        xOut, yOut = OutData
-        x.append(xOut)
-        y.append(yOut)
-    regression = sci.stats.linregress(x,y)
-    slope, intercept, r, p, stdev = regression
-    print("Hausdorff Dimension:",slope)
-    plt.plot(x,y)
-    plt.show()
+    for i in range(len(BallRadii)):
+        if 1.2 < np.log(BallRadii[i]) < 3:
+            x.append(np.log(BallRadii[i]))
+            y.append(np.log(BallCountAverage[i]))
+    slope, intercept, r_value, p_value, std_err = sci.stats.linregress(x,y)
+    print("Df:",slope)
 
-    
-    
     
