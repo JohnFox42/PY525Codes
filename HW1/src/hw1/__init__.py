@@ -20,6 +20,8 @@ def main() ->None:
     x = np.linspace(0,12,100)
     plt.hist(data,bins=101,density=True)
     plt.plot(x,Gauss(x,1/np.sqrt(2*np.pi),6,1))
+    plt.xlabel("z")
+    plt.ylabel("P(z)")
     plt.show()
 
     #Question 2
