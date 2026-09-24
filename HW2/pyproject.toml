@@ -1,0 +1,20 @@
+[project]
+name = "hw2"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "MrWick2", email = "jef6032@gmail.com" }
+]
+requires-python = ">=3.14"
+dependencies = [
+    "numpy>=2.5.3",
+    "statistics>=1.0.3.5",
+]
+
+[project.scripts]
+hw2 = "hw2:main"
+
+[build-system]
+requires = ["uv_build>=0.12.5,<0.13.0"]
+build-backend = "uv_build"

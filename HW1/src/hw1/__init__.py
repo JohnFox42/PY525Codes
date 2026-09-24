@@ -53,7 +53,7 @@ def main() ->None:
     for i in range(len(walkers[:,0])):
         SumSquares += walkers[i,0]**2+walkers[i,1]**2
     variance = SumSquares/NumWalkers
-    D0 = variance/(2*Time)
+    D0 = variance/(4*Time)
     print("D0:",D0)
 
     
