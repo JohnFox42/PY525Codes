@@ -43,7 +43,12 @@ def main() -> None:
         Lattice = f'{i:016b}'
         H = LatticeHCalculator(Lattice)
         HList.append(H)
-    print("Brute force <H>/N:",statistics.mean(HList)/16)
+    Z = 0
+    for i in HList:
+        Z += np.e**(-i/5)
+    for i in range(len(HList)):
+        HList[i] = HList[i]*np.e**(-HList[i]/5)/Z
+    print("Brute force <H>/N:",sum(HList)/16)
 
     #Part b, metropolis algorithm
     #intial guess
@@ -54,11 +59,11 @@ def main() -> None:
         x0.append(LatticeDecoder(i))
     ListXi = [x0.copy()]
     #Metropolis algorithm
-    for i in range(100):
+    for i in range(100000):
         xt = x0.copy()
         change = random.randint(0,15)
         xt[change] = -x0[change]
-        r = (np.e**(-LatticeHCalculator(xt))/np.e**(-LatticeHCalculator(x0)))
+        r = (np.e**(-LatticeHCalculator(xt)/5)/np.e**(-LatticeHCalculator(x0)/5))
         if r >= 1:
             ListXi.append(xt.copy())
             x0 = xt.copy()
@@ -66,6 +71,7 @@ def main() -> None:
             ListXi.append(xt.copy())
             x0 = xt.copy()
         else:
+            ListXi.append(x0.copy())
             continue
     Htot = 0
     for i in ListXi:
