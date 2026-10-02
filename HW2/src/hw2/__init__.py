@@ -291,9 +291,10 @@ def main() -> None:
     x = np.linspace(0.2,5,100)
     y = []
     for i in x:
-        AvgH, holdery = TenMetroAlgorithm(i)
+        AvgH, holdery, AvgS = TenMetroAlgorithm(i)
         y.append(holdery)
     del AvgH
+    del AvgS
     gc.collect()
     plt.plot(x,y)
     plt.show()
