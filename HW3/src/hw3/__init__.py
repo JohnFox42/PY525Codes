@@ -28,24 +28,30 @@ def main() -> None:
         i[0] = vmax*np.cos(theta)
         i[1] = vmax*np.sin(theta)
     #Defining the Lennard-Jones Force
-    def Flj(r):
-        return 4*(-12/r**13+6/r**7)
-    def MinR(element,array):
-        minr = 9999
+    def Flj(x,array,index):
+        TotalForce = np.array([0,0])
+        ind = -1
         for i in array:
-            if element == i:
-                pass
+            ind += 1 
+            if ind == index:
+                continue
             else:
-                holder = np.sqrt((element[0]-i[0])**2+(element[1]-i[1])**2)
-                if holder < minr:
-                    minr = holder
-                holder = np.sqrt((element[0]-(10-i[0]))**2+(element[1]-i[1])**2)
-                if holder < minr:
-                    minr = holder
-                holder = np.sqrt((element[0]-i[0])**2+(element[1]-(10-i[1]))**2)
-                if holder < minr:
-                    minr = holder
+                dist = np.sqrt((x[0]-i[0])**2+(x[1]-i[1])**2)
+                ForceMag = 4*((-12/dist**13+6/dist**7))
+                theta = np.arctan((i[1]-x[1])/(i[0]-x[0]))
+                np.add(TotalForce,np.array([ForceMag*np.cos(theta),ForceMag*np.sin(theta)]))
+        return TotalForce
+    for i in range(2000):
+        for j in range(len(r)):
+            delr = r[j] + (0.01)*v[j] + (0.01)**2/(2)*Flj(r[j],r,j)
+            v[j] = v[j] + (0.01/2)*(Flj(r[j],r,j)+Flj(delr,r,j))
+            r[j] = delr
+        if i % 200 == 0:
+            plt.scatter(r[:,0],r[:,1])
+    plt.scatter(r[:,0],r[:,1])
+    plt.show()
+        
+
                 
-    for i in r:
-        minr = MinR(i,r)
+        
     
