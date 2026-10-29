@@ -55,56 +55,36 @@ def main() -> None:
             if ind == index:
                 continue
             else:
-                print("x:",x)
-                print("i:",i)
-                dist = MinDist(x,i)
+                dist = np.array(MinDist(x,i))
                 distMag = np.linalg.norm(dist)
-                print("distMag:",distMag)
                 #truncating the force term
                 if distMag > 3:
                     continue
-                ForceMag = 4*((-12/distMag**13+6/distMag**7))
-                print("ForceMag:",ForceMag)
-                if dist[1] == 0:
-                    if dist[0] > 0:
-                        theta = 0
-                    elif dist[0] < 0:
-                        theta = np.pi
-                    else:
-                        print("Two Particles on top of one another")
-                else:
-                    theta = np.arctan(dist[1]/dist[0])
-                TotalForce += [ForceMag*np.cos(theta),ForceMag*np.sin(theta)]
-                print("theta:",theta)
-                print("Total Force",TotalForce)
+                elif distMag == 0:
+                    raise ValueError("Two particles occupy the same position")
+                ForceMag = 24*((-2/distMag**13+1/distMag**7))
+                TotalForce += ForceMag*dist/distMag
         return TotalForce
     #Setting intial positions and velocities 
     r = np.array([[4,5],[6,5]])
-    v = np.array([[0.001,0],[-0.001,0]])
+    v = np.array([[1,0],[-1,0]])
 
     #Evolving the system
     delrminus = np.zeros([2,2])
     for i in range(len(r)):
         delrminus[i] = r[i] - v[i]*(0.005)
-    delrplus = np.zeros([16,2])
+    delrplus = np.zeros([2,2])
 
-    print(delrminus)
-
-    for i in range(3):
+    for i in range(200):
+        if i % 20 == 0:
+            plt.scatter(r[:,0],r[:,1])
         for j in range(len(r)):
-            delrplus[j] = 2*r[j]-(0.005)*v[j]+(0.005)**2/2*Flj(r[j],r,j)
-            v[j] = v[j] + (0.005)/2*(Flj(r[j],r,j)+Flj(delrplus[j],r,j))
-            #Check periodic boundaries
-            if 0 <= delrplus[j][0] <= 10 and 0 <= delrplus[j][1] <= 10:
-                pass
-            elif delrplus[j][0] > 10:
-                delrplus[j][0] = delrplus[j][0] - 10
-            elif delrplus[j][0] < 0:
-                delrplus[j][0] = delrplus[j][0] + 10 
-            elif delrplus[j][1] > 10:
-                delrplus[j][1] = delrplus[j][1] - 10
-            elif delrplus[j][1] < 0:
-                delrplus[j][1] = delrplus[j][1] + 10 
-        r = delrplus
-        print(r)
+            delrplus[j] = 2*r[j]-delrminus[j]+(0.005)**2*Flj(r[j],r,j)
+            v[j] = delrplus[j]-delrminus[j]/(2*(0.005))
+            #Apply periodic boundaries
+            delrplus[j] %= 10
+        delrminus = np.copy(r) 
+        r = np.copy(delrplus)
+    plt.scatter(r[:,0],r[:,1])
+    plt.show()
     
