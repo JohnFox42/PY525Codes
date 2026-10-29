@@ -68,6 +68,7 @@ def main() -> None:
                 ForceMag = 24*((-2/distMag**13+1/distMag**7))
                 TotalForce += ForceMag*dist/distMag
         return TotalForce
+    '''
     #Question 1
     print("Question 1")
     #Creating the positions and velocities 
@@ -87,17 +88,53 @@ def main() -> None:
         theta = 2*np.pi*random.random()
         i[0] = vmax*np.cos(theta)
         i[1] = vmax*np.sin(theta)
-    for i in range(2000):
+
+    #Evolving the system
+    delrminus = np.zeros([16,2])
+    for i in range(len(r)):
+        delrminus[i] = r[i] - v[i]*(0.01)
+    delrplus = np.zeros([16,2])
+
+    for i in range(100):
         for j in range(len(r)):
-            delr = r[j] + (0.01)*v[j] + (0.01)**2/(2)*Flj(r[j],r,j)
-            v[j] = v[j] + (0.01/2)*(Flj(r[j],r,j)+Flj(delr,r,j))
-            r[j] = delr
-        if i % 200 == 0:
-            plt.scatter(r[:,0],r[:,1])
+            delrplus[j] = 2*r[j]-delrminus[j]+(0.01)**2*Flj(r[j],r,j)
+            v[j] = delrplus[j]-delrminus[j]/(2*(0.01))
+            #Apply periodic boundaries
+            delrplus[j] %= 10
+        delrminus = np.copy(r) 
+        r = np.copy(delrplus)
+    for i in v:
+        print(np.linalg.norm(i))
+    '''
+    #Question 2
+    print("Question 2")
+    #Placing the initial lattice with small initial velocities
+    r = np.zeros([16,2])
+    v = np.zeros([16,2])
+    hozcount = -1
+    for i in range(len(r)):
+        if i % 4 == 0:
+            hozcount += 1
+        r[i] = [(hozcount)*2+2,(i%4)*2+2]
+    for i in range(len(v)):
+        theta = random.random()*2*np.pi
+        v[i] = [(0.00001)*np.cos(theta),(0.00001)*np.sin(theta)]
+
+    #Evolving the system
+    delrminus = np.zeros([16,2])
+    for i in range(len(r)):
+        delrminus[i] = r[i] - v[i]*(0.005)
+    delrplus = np.zeros([16,2])
+
+    plt.scatter(r[:,0],r[:,1])
+
+    for i in range(5000):
+        for j in range(len(r)):
+            delrplus[j] = 2*r[j]-delrminus[j]+(0.005)**2*Flj(r[j],r,j)
+            v[j] = delrplus[j]-delrminus[j]/(2*(0.005))
+            #Apply periodic boundaries
+            delrplus[j] %= 10
+        delrminus = np.copy(r) 
+        r = np.copy(delrplus)
     plt.scatter(r[:,0],r[:,1])
     plt.show()
-        
-
-                
-        
-    
