@@ -68,7 +68,6 @@ def main() -> None:
                 ForceMag = 24*((-2/distMag**13+1/distMag**7))
                 TotalForce += ForceMag*dist/distMag
         return TotalForce
-    '''
     #Question 1
     print("Question 1")
     #Creating the positions and velocities 
@@ -78,6 +77,7 @@ def main() -> None:
     for i in r:
         i[0] = 10*random.random()
         i[1] = 10*random.random()
+    OGr = r 
     #Setting the velocities based on the Maxwell-Boltzmann Distribution with help from chatgpt
     a = np.sqrt(1/120)
     def MaxCDF(x):
@@ -105,7 +105,12 @@ def main() -> None:
         r = np.copy(delrplus)
     for i in v:
         print(np.linalg.norm(i))
-    '''
+    for i in range(len(r)):
+        Totdisp = np.linalg.norm(r[i]-OGr[i])**2
+        AvgDisp = Totdisp/16
+    D0 = AvgDisp/(4*1)
+    print("Dispersion Constant D0:",D0)
+
     #Question 2
     print("Question 2")
     #Placing the initial lattice with small initial velocities
@@ -128,7 +133,7 @@ def main() -> None:
 
     plt.scatter(r[:,0],r[:,1])
 
-    for i in range(5000):
+    for i in range(3000):
         for j in range(len(r)):
             delrplus[j] = 2*r[j]-delrminus[j]+(0.005)**2*Flj(r[j],r,j)
             v[j] = delrplus[j]-delrminus[j]/(2*(0.005))
@@ -136,5 +141,45 @@ def main() -> None:
             delrplus[j] %= 10
         delrminus = np.copy(r) 
         r = np.copy(delrplus)
+
+    keys = np.linspace(1,15,15)
+    CorrCount = dict.fromkeys(keys,0)
+    for i in range(1,len(r)):
+        dist = np.linalg.norm(r[0]-r[i])
+        formKey = 0 
+        for j in CorrCount.keys():
+            if formKey < dist <= j:
+                CorrCount[j] += 1
+                formKey = j
+    print(CorrCount)   
+    AvgV = 0 
+    for i in v:
+        AvgV += np.linalg.norm(i)/16
+    T = AvgV**2*np.pi/8
+    print("Temperature",T) 
     plt.scatter(r[:,0],r[:,1])
     plt.show()
+
+    #Question 3
+    print("Question 3")
+    AddedTemp = 0 
+    for i in range(30):
+        #Heating the system 
+        for i in range(len(v)):
+            theta = np.arctan(v[i][1]/v[i][0])
+            v[i] += [np.sqrt(0.2)*np.cos(theta),np.sqrt(0.2)*np.sin(theta)]
+        AddedTemp += 16*np.sqrt(0.2)
+
+        #Evolving the system
+        for i in range(200):
+            for j in range(len(r)):
+                delrplus[j] = 2*r[j]-delrminus[j]+(0.005)**2*Flj(r[j],r,j)
+                v[j] = delrplus[j]-delrminus[j]/(2*(0.005))
+                #Apply periodic boundaries
+                delrplus[j] %= 10
+            delrminus = np.copy(r) 
+            r = np.copy(delrplus)
+        print("AddedTemp: ",AddedTemp)
+        plt.scatter(r[:,0],r[:,1])
+        plt.show()
+    
